@@ -22,8 +22,13 @@
 | `/help` | 사용할 수 있는 명령어 보기 |
 | `/status` | 현재 Nanobot 상태 확인 |
 | `/new` | 현재 작업을 멈추고 새 대화 시작 |
+| `/context` | 현재 채팅에 저장된 context 상태 확인 |
+| `/context clear` | 현재 채팅의 저장된 대화 context 비우기 |
+| `/clear` | `/context clear` 단축 명령 |
 | `/stop` | 현재 작업 중지 |
 | `/restart` | bot 재시작 요청 |
+
+`/context clear` 는 현재 Telegram 또는 WebUI 채팅 세션에 쌓인 대화 기록과 pending 상태 표시를 비운다. 모델 선택, reply footer 설정, 장기 메모리는 유지한다.
 
 ## 일정 명령어
 
