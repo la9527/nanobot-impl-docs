@@ -1,5 +1,7 @@
 # Nanobot WebUI Thread Surface Redesign 검토 - 2026-05-01
 
+> 용어 메모: 이 문서는 2026-05-01 당시의 UX 판단 기록이라 `thread`, `dashboard`, `Assistant details` 같은 예전 표현을 포함한다. 현재 WebUI 용어 기준은 [docs/user-guide/10-webui-terminology.md](../user-guide/10-webui-terminology.md) 를 따른다.
+
 ## 1. 문서 목적
 
 이 문서는 Nanobot WebUI 의 현재 thread 화면이 owner-aware summary, current task, linked session, action result preview, thread status block 을 동시에 노출하면서 채팅 자체가 압박받는 문제를 UX 관점에서 다시 판단하기 위한 작업안이다.

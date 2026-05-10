@@ -52,6 +52,8 @@ http://127.0.0.1:8765/webui/
 - [07. 반복 작업과 알림](07-periodic-tasks.md)
 - [08. 메일 자동화 파일럿](08-mail-automation.md)
 - [09. 운영 확인과 문제 해결](09-troubleshooting.md)
+- [10. WebUI 용어 기준](10-webui-terminology.md)
+- [11. 심화 참고 문서 안내](11-advanced-reference.md)
 
 ## 가장 많이 쓰는 명령
 

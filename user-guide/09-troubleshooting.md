@@ -34,7 +34,18 @@ curl -fsS http://127.0.0.1:18790/health
 curl -i http://127.0.0.1:8765/webui/bootstrap
 ```
 
-정상이면 `HTTP/1.1 200 OK` 와 token/model target 정보가 나온다.
+중요한 점은 현재 운영 설정에서 인증 없이 호출하면 `401 Unauthorized` 가 나올 수 있다는 것이다. 이것만으로 곧바로 장애라고 판단하지 않는다.
+
+확인 기준은 아래처럼 나눠서 본다.
+
+- 인증 없이 `401 Unauthorized`: 현재 운영 설정에서는 정상일 수 있다.
+- 인증 헤더 또는 실제 브라우저 세션 기준 `200 OK`: bootstrap 동작 정상
+
+예시:
+
+```bash
+curl -fsS -H 'X-Nanobot-Auth: <bootstrap-secret>' http://127.0.0.1:8765/webui/bootstrap
+```
 
 ## launchd 서비스 확인
 
@@ -91,6 +102,38 @@ npm run build
 3. `/calendar` 를 입력한다.
 4. 3~5초 뒤에도 결과가 남는지 본다.
 5. 사라지면 session history 저장과 gateway 로그를 확인한다.
+
+## reasoning 줄이 안 보이거나 순서가 이상할 때
+
+확인 포인트는 아래와 같다.
+
+1. 설정에서 `추론 표시 수준` 이 꺼져 있지 않은지 확인한다.
+2. 새로고침 후에도 `생각` 또는 `생각 중` 줄이 답변 앞에 남는지 본다.
+3. 오래된 bundle 을 보고 있을 수 있으니 `npm run build` 이후 새로고침했는지 확인한다.
+4. 필요하면 WebUI session history 와 live 브라우저 표시를 함께 본다.
+
+현재 기준으로 observable reasoning 은 answer 앞의 안전한 요약 줄을 남기는 방향으로 정리돼 있다.
+
+## action result 상세가 안 보일 때
+
+최근 UI 는 action result 를 기본적으로 compact row 로 접어 보여준다.
+
+따라서 아래 순서로 확인한다.
+
+1. result row 자체를 클릭한다.
+2. 또는 `세부 정보` 버튼을 눌러 detail 을 연다.
+3. 새로고침 후에도 같은 result 가 남는지 확인한다.
+
+calendar/mail 결과가 본문 위에서 사라진 것처럼 보여도, compact row 로만 접혀 있는 경우가 있다.
+
+## Telegram 채팅에 삭제 버튼이 안 보일 때
+
+이 경우는 현재 정책상 정상 동작일 수 있다.
+
+- WebUI 내부 websocket 채팅은 삭제 affordance 를 노출할 수 있다.
+- Telegram 같은 bridged 채팅은 WebUI 에서 삭제 UI 를 숨긴다.
+
+즉, 삭제 버튼이 안 보인다고 바로 오류로 보지 않는다.
 
 ## 일정 생성이 막힐 때
 
@@ -167,3 +210,5 @@ curl -i http://127.0.0.1:8765/webui/bootstrap
 ```
 
 이 세 가지가 정상이면 WebUI 와 gateway 기본 상태는 대체로 정상이다.
+
+더 깊은 운영 배경은 [11. 심화 참고 문서 안내](11-advanced-reference.md) 와 `docs/status-summary/` 날짜형 메모를 함께 보는 편이 좋다.

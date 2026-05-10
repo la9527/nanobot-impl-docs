@@ -1,5 +1,7 @@
 # Nanobot Assistant Dashboard Information Architecture - 2026-05-01
 
+> 용어 메모: 이 문서는 당시 정보구조 논의를 보존하기 위해 예전 표현을 유지한다. 현재 WebUI 용어 기준은 [docs/user-guide/10-webui-terminology.md](../user-guide/10-webui-terminology.md) 를 따른다.
+
 ## 1. 문서 목적
 
 이 문서는 thread 화면을 chat-first 로 되돌리는 대신, owner-wide aggregate 를 수용할 별도 home/dashboard surface 를 어떻게 설계할지 정보구조 수준에서 구체화한 문서다.

@@ -1,5 +1,7 @@
 # Nanobot WebUI UX Redesign
 
+> 용어 메모: 이 디렉터리의 검토 문서는 당시 표현을 그대로 보존한다. 현재 WebUI 용어 기준은 [docs/user-guide/10-webui-terminology.md](../user-guide/10-webui-terminology.md) 를 따른다.
+
 ## 목적
 
 이 디렉토리는 Nanobot WebUI 의 thread 화면에서 owner-aware summary, task summary, action result preview, memory correction quick action 이 한 화면에 과도하게 누적되는 문제를 재정리하고, 선택된 개선 방향과 dashboard 정보 구조를 구체화한 문서를 모아두는 공간이다.

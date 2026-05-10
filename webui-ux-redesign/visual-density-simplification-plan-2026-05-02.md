@@ -1,5 +1,7 @@
 # Nanobot WebUI Visual Density Simplification Plan - 2026-05-02
 
+> 용어 메모: 이 문서는 2026-05-02 기준 density 검토 기록이라 `dashboard`, `thread` 같은 당시 표현을 유지한다. 현재 WebUI 용어 기준은 [docs/user-guide/10-webui-terminology.md](../user-guide/10-webui-terminology.md) 를 따른다.
+
 ## 1. 문서 목적
 
 이 문서는 현재 진행 중인 thread/dashboard 개선을 계속 밀기 전에, 화면이 넓고 느슨하게 보이는 문제를 먼저 줄이기 위한 `visual density pass` 기준안을 정리한다.

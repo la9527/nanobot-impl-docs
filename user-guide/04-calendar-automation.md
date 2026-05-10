@@ -178,9 +178,9 @@ Approval required before deleting '치과'.
 WebUI 에서는 calendar 관련 상태가 다음 위치에 보일 수 있다.
 
 - 채팅 본문: 명령 결과
-- 사이드바: approval pending badge
-- Assistant details: action result 또는 conflict details
-- Dashboard: blocked/pending 작업 요약
+- 사이드바: 승인 대기 배지
+- 세부 정보: 결과 카드 또는 충돌 세부 정보
+- 대시보드: 막힘/대기 작업 요약
 
 ## 충돌이 있을 때
 

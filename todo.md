@@ -235,6 +235,7 @@ Telegram 에서 새 user turn 이 들어오거나 assistant 응답이 생성될 
 - 다음 코드 착수 단위는 `owner-aware aggregate` 를 WebUI 와 `/api/sessions` 기준 payload 에 연결하는 작업이다.
 - owner memory / personal task backbone 은 conceptual draft 는 완료됐고 runtime metadata 경계 정의가 다음 단계다.
 - Gmail/Calendar/proactive 는 conceptual contract 는 준비됐고 runtime 구현은 아직 시작 전이다.
+- [ ] WebUI 일정 action result strip 이 history 하단에 고정처럼 남는지 live 구조를 다시 점검하고, 기본은 한 줄 compact summary + `세부 정보` 클릭 시 상세 노출 형태로 정리
 
 ### backlog 와 기존 방향 A 문서의 관계
 

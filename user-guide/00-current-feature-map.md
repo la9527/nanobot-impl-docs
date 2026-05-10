@@ -10,13 +10,13 @@
 
 | 영역 | 할 수 있는 일 | 어디서 쓰나 |
 | --- | --- | --- |
-| WebUI Dashboard | 전체 상태, 막힌 작업, 승인 대기 요약 보기 | WebUI 첫 화면 |
+| WebUI 대시보드 | 전체 상태, 막힌 작업, 승인 대기 요약 보기 | WebUI 첫 화면 |
 | Telegram bridge | Telegram 대화를 WebUI 에서 보고 답장 | WebUI 사이드바의 Telegram 채팅 |
 | Calendar automation | 일정 요약, 충돌 확인, 생성 요청, 승인/취소 | `/calendar` 명령 |
-| Model target | 세션별 모델 선택과 해제 | `/model` 명령, WebUI target 표시 |
+| 모델 타깃 | 세션별 모델 선택과 해제 | `/model` 명령, WebUI 타깃 표시 |
 | smart-router | 요청 성격에 따라 local/mini/full 선택 | `/model smart-router` |
-| Owner-aware status | 사용자 중심 작업 상태와 action result 표시 | Dashboard, thread status |
-| Memory correction | 잘못된 기억 수정, 프로젝트 완료 표시 | 자연어 요청, WebUI quick action |
+| 사용자 중심 상태 | 사용자 중심 작업 상태와 action result 표시 | 대시보드, 대화 상태 |
+| 메모리 정정 | 잘못된 기억 수정, 프로젝트 완료 표시 | 자연어 요청, WebUI 빠른 동작 |
 | Proactive heartbeat | 반복 작업과 quiet-hours 기반 알림 제어 | `HEARTBEAT.md`, WebUI/Telegram |
 | Mail pilot | 메일 요약, 초안, 승인 기반 전송 흐름 준비 | `/mail`, 자연어 요청 |
 | Live operations | gateway/api/WebUI bundle 확인과 재시작 | launchd scripts, health endpoint |

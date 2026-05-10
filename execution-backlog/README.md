@@ -1,5 +1,7 @@
 # Nanobot Personal Assistant Execution Backlog
 
+> 용어 메모: 이 디렉터리의 초기 기획 문서에는 `assistant`, `Dashboard`, `Settings`, `thread` 같은 예전 WebUI 표현이 남아 있을 수 있다. 현재 사용자 노출 용어 기준은 [docs/user-guide/10-webui-terminology.md](../user-guide/10-webui-terminology.md) 를 따른다.
+
 이 디렉터리는 [ConceptualPhase.md](../ConceptualPhase.md)와 `docs/conceptual-phase/*.md` 에서 정리한 내용을 실제 구현 순서로 내리기 위한 실행 백로그 문서 모음이다.
 
 목표는 두 가지다.

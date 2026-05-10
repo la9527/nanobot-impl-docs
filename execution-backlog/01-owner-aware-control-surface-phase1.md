@@ -1,5 +1,7 @@
 # 01 Owner-Aware Control Surface Phase 1
 
+> 용어 메모: 이 문서는 당시 설계 표현을 유지한 기록 문서다. 현재 WebUI 용어 기준은 [docs/user-guide/10-webui-terminology.md](../user-guide/10-webui-terminology.md) 를 따른다.
+
 ## 1. 문서 목적
 
 이 문서는 개인비서 execution backlog 의 1순위 작업인 `owner-aware control surface`를 phase-1 범위로 정리한 실행 문서다.
