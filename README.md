@@ -15,6 +15,8 @@
 
 ## 현재 디렉터리 구조
 
+- `.github-source/`
+  - Nanobot workspace instruction, file instruction, skill 의 실제 버전관리 위치
 - `planning/`
   - active queue, conceptual draft, execution backlog
 - `operations/`
@@ -28,6 +30,8 @@
 
 ### Active source of truth
 
+- `.github-source/`
+  - Nanobot workspace instruction, file instruction, skill 의 versioned source
 - `planning/todo.md`
   - 지금 열려 있는 작업, validation, defer 상태를 짧게 유지하는 문서
 - `planning/execution-backlog/`
@@ -62,5 +66,6 @@
 - active queue 는 `planning/todo.md` 에만 남긴다.
 - 구현 slice 의 범위와 완료 기준은 `planning/execution-backlog/*.md` 에서 관리한다.
 - 날짜형 작업 로그와 live 검증 결과는 `operations/status-summary/` 로 보낸다.
+- Nanobot 루트 `.github` 는 로컬 호환용 symlink 이고, 실제 tracked source 는 이 repo 안의 `.github-source/` 로 유지한다.
 - 이미 끝난 설계 토론은 삭제보다 `reference archive` 로 남기고, README 에 현재 상태를 명시한다.
 - 새 구현을 다시 열 때는 기존 archive 문서를 직접 TODO 로 되살리지 말고, `planning/todo.md` 와 새 backlog 문서로 승격해서 다시 시작한다.
