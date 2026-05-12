@@ -103,6 +103,21 @@ npm run build
 4. 3~5초 뒤에도 결과가 남는지 본다.
 5. 사라지면 session history 저장과 gateway 로그를 확인한다.
 
+## Telegram linked session 에서 `/status` 가 계속 진행중으로 남을 때
+
+이 경우는 backend inline slash-command 저장 경로와 WebUI linked-session pending 정리 둘 다 확인해야 한다.
+
+확인 순서는 아래와 같다.
+
+1. `cd /Volumes/ExtData/Nanobot/source/webui && npm run build` 를 다시 실행했는지 확인한다.
+2. `/Volumes/ExtData/Nanobot/infra/scripts/stop-nanobot-services.sh` 와 `start-nanobot-services.sh` 로 launchd 서비스를 재기동한다.
+3. `curl -fsS http://127.0.0.1:18790/health` 와 authenticated `GET /webui/bootstrap` 이 정상인지 확인한다.
+4. WebUI 를 새로고침한 뒤 같은 Telegram linked thread 에서 `/status` 를 다시 실행한다.
+5. 결과 bubble 은 보이는데 `연결된 외부 세션의 응답을 기다리고 있습니다.` 문구가 남으면 오래된 bundle 또는 stale browser state 가능성을 먼저 본다.
+
+현재 기준으로 `/status` 는 linked Telegram session 에서도 session history 에 저장되도록 보강돼 있다.
+따라서 Telegram 에는 답이 오지만 WebUI 에만 계속 pending 이면, 먼저 build/restart/reload 순서가 실제로 반영됐는지 확인하는 편이 빠르다.
+
 ## reasoning 줄이 안 보이거나 순서가 이상할 때
 
 확인 포인트는 아래와 같다.

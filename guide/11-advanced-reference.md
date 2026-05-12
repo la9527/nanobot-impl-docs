@@ -69,6 +69,7 @@ calendar 자동화가 UI 에서 왜 이런 식으로 보이는지, 왜 metadata 
 
 - [operations/status-summary/nanobot-status-summary-2026-05-09.md](../operations/status-summary/nanobot-status-summary-2026-05-09.md)
 - [operations/status-summary/nanobot-status-summary-2026-05-10.md](../operations/status-summary/nanobot-status-summary-2026-05-10.md)
+- [operations/status-summary/nanobot-status-summary-2026-05-13.md](../operations/status-summary/nanobot-status-summary-2026-05-13.md)
 
 이 문서들은 특정 날짜에 실제로 무엇을 수정했고, 무엇을 live 로 검증했고, 어떤 리스크가 남았는지를 기록한다.
 
@@ -78,6 +79,7 @@ calendar 자동화가 UI 에서 왜 이런 식으로 보이는지, 왜 metadata 
 - observable reasoning 과 reasoning visibility 작업
 - action result compact row 와 세부 정보 토글
 - WebUI i18n / 용어 기준 정리
+- Telegram linked WebUI duplicate assistant 표시와 `/status` pending 수정
 
 ### 6. upstream sync / merge 배경
 
@@ -105,6 +107,11 @@ calendar 자동화가 UI 에서 왜 이런 식으로 보이는지, 왜 metadata 
 1. [06. 상태, 작업, 메모리 관리](06-status-task-memory.md)
 2. [archive/observable-reasoning-plan/README.md](../archive/observable-reasoning-plan/README.md)
 3. [operations/status-summary/nanobot-status-summary-2026-05-10.md](../operations/status-summary/nanobot-status-summary-2026-05-10.md)
+
+### Telegram linked WebUI thread 이슈가 궁금할 때
+
+1. [09. 운영 확인과 문제 해결](09-troubleshooting.md)
+2. [operations/status-summary/nanobot-status-summary-2026-05-13.md](../operations/status-summary/nanobot-status-summary-2026-05-13.md)
 
 ### calendar prompt / approval / dashboard reliability 가 궁금할 때
 
