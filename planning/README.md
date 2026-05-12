@@ -8,6 +8,10 @@
 - [execution-backlog/README.md](./execution-backlog/README.md): 구현 slice 별 workplan
 - [concepts/README.md](./concepts/README.md): 개인비서 제품 축의 conceptual reference
 
+현재 바로 참고할 신규 slice:
+
+- [execution-backlog/07-webui-command-menu-and-dashboard-split-phase1.md](./execution-backlog/07-webui-command-menu-and-dashboard-split-phase1.md)
+
 ## 운영 원칙
 
 - active queue 는 `todo.md` 에만 둔다.
