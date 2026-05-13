@@ -18,6 +18,7 @@
 - Telegram linked WebUI thread 에서 같은 assistant 답변이 연속 중복 노출되던 문제는 현재 browser 기준으로 재현되지 않았다.
 - 같은 thread 에서 `/status` 실행 시 Telegram 에만 결과가 가고 WebUI 는 계속 pending 으로 남던 문제는 현재 live browser 기준으로 재현되지 않는다.
 - WebUI idle 상태에서 heartbeat morning briefing 내부 지시문이 assistant 메시지처럼 노출되던 문제는 현재 source 수정과 launchd 재기동 후 재현 경로가 차단된 상태다.
+- linked Telegram WebUI thread 에서 `/help`, `/status`, `/usage` 같은 inline slash command 본문이 markdown 대신 plain-text 규칙으로 표시되어 줄바꿈과 원문 기호가 보존되도록 수정했다.
 - `/Volumes/ExtData/Nanobot/docs` 는 source 와 별도 git repo 이므로, 아래 운영 메모 갱신은 source repo commit 과 분리된 docs repo commit 으로 관리된다.
 
 ## 이번에 반영한 주요 작업
@@ -61,6 +62,14 @@
 - 이번 수정에서는 `nanobot/cli/commands.py` 의 `on_heartbeat_execute()` 가 target channel 과 상관없이 항상 내부 `cli/direct` 채널에서 `agent.process_direct(...)` 를 실행하도록 바꿨다.
 - 최종 전달은 기존처럼 `on_heartbeat_notify()` 에서 target channel 정책을 따라가므로, delivery behavior 는 유지하면서 WebUI 누출 경로만 차단했다.
 - 관련 회귀는 `tests/cli/test_commands.py` 에 heartbeat target 이 `websocket` 이어도 execution channel 은 `cli/direct` 로 고정되는 focused test 를 추가해 검증했다.
+
+### 6. WebUI 가 slash command 의 plain-text render hint 를 실제로 반영하도록 맞췄다
+
+- backend builtin command 는 이미 `/help`, `/status`, `/usage` 결과에 `render_as = "text"` metadata 를 붙이고 있었지만, WebUI 는 history hydrate 와 live websocket event 모두에서 이 힌트를 버리고 있었다.
+- 그 결과 `/help` 는 markdown heading/list 로 재해석되고, `/status` 는 plain text 기준 줄바꿈과 고정폭 느낌이 의도대로 보이지 않았다.
+- 이번 수정에서는 websocket outbound frame 에 `render_as` 를 실어 보내고, `webui/src/hooks/useSessions.ts` 와 `webui/src/hooks/useNanobotStream.ts` 에서 이를 `UIMessage.renderAs` 로 보존하도록 연결했다.
+- `webui/src/components/MessageBubble.tsx` 에서는 `renderAs === "text"` 인 assistant message 를 markdown 대신 `whitespace-pre-wrap` plain-text block 으로 렌더해 slash command 응답 본문이 그대로 보이게 바꿨다.
+- 관련 회귀는 `webui/src/tests/message-bubble.test.tsx`, `webui/src/tests/useSessions.test.tsx`, `webui/src/tests/useNanobotStream.test.tsx`, `tests/channels/test_websocket_channel.py` 로 추가했다.
 
 ## 이번에 확인된 운영 포인트
 
@@ -108,8 +117,15 @@ cd /Volumes/ExtData/Nanobot/source/webui
 npm test -- src/tests/thread-shell.test.tsx
 # 43 passed
 
+npm test -- src/tests/message-bubble.test.tsx src/tests/useSessions.test.tsx src/tests/useNanobotStream.test.tsx
+# 39 passed
+
 npm run build
 # 통과
+
+cd /Volumes/ExtData/Nanobot/source
+PYTHONPATH=$PWD ./.venv/bin/pytest tests/channels/test_websocket_channel.py -q -k response_model_metadata
+# 2 passed
 ```
 
 live runtime 기준 검증:
@@ -161,7 +177,7 @@ curl -fsS -H 'X-Nanobot-Auth: <bootstrap-secret>' http://127.0.0.1:8765/webui/bo
 ## 다음 작업 후보
 
 - linked Telegram session history 에 과거부터 남아 있는 duplicate row 의 범위를 한번 더 샘플링해, backend 원인 정리가 필요한지 판단한다.
-- `/help`, `/usage` 같은 다른 inline slash command 도 같은 linked WebUI 경로에서 한 번 더 점검한다.
+- linked Telegram command-result 전용 narrow regression test 를 더 추가할지 판단한다.
 - linked Telegram thread 의 live event 와 polled history merge 규칙을 더 명시적으로 문서화할지 검토한다.
 
 ## 결론

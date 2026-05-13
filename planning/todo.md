@@ -12,12 +12,6 @@
 
 ## 1. Active Now
 
-### P0. 실채널 validation 마감
-
-- [ ] `/model smart-router` 를 실제 inbound 채널 세션에서 다시 end-to-end 검증하고 닫을지 판단
-- [ ] live Telegram inbound 한 턴으로 WebUI websocket push mirror 와 linked session reply sync 를 재검증
-- [ ] linked Telegram WebUI thread 에서 `/status`, `/help`, `/usage` 가 같은 inline slash-command 경로로 정상 저장/표시되는지 확인
-
 ### P1. linked Telegram / WebUI 후속 안정화
 
 - [ ] linked Telegram session history 에 과거부터 남아 있는 duplicate row 범위를 샘플링해 backend 원인 정리가 필요한지 판단
@@ -58,6 +52,7 @@
 
 - `모델 선택 /model`, `응답 footer /status /usage`, Telegram WebUI websocket mirror 기반 작업
 - Telegram linked WebUI duplicate assistant 표시와 `/status` pending root-cause 수정
+- 실채널 validation 마감: `/model smart-router` close 판단, Telegram mirror sync 정리, linked Telegram WebUI inline `/status` `/help` `/usage` 저장/표시 정리
 - owner-aware control surface, owner memory/task backbone, Gmail, Calendar, proactive phase-1
 - status-summary 문서 구조 이동과 관련 운영 정리
 - WebUI context window indicator, lazy hydrate, detail disclosure refinement, local timestamp formatting
@@ -80,5 +75,5 @@
 
 ## 5. 현재 한 줄 판단
 
-- 구현 backlog 의 큰 덩어리는 1차로 정리됐고, 지금 남은 핵심은 `실채널 validation 마감` 과 `linked Telegram / WebUI 후속 안정화` 이다.
+- 구현 backlog 의 큰 덩어리는 1차로 정리됐고, 지금 남은 핵심은 `linked Telegram / WebUI 후속 안정화` 와 `live UI follow-up` 이다.
 - 새 기능을 더 벌리기보다, 이미 반영한 slice 를 운영 기준으로 다시 확인하고 필요한 경우에만 다음 backlog 문서를 여는 상태로 본다.

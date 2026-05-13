@@ -13,6 +13,7 @@
 - 실제 source tree 기준 작업 경로는 `/Volumes/ExtData/Nanobot/source` 이다.
 - 현재 사용자 실행 `nanobot` 엔트리포인트는 `~/.local/bin/nanobot` 이고, `uv tool` 기반 editable install 경로를 통해 source tree 를 참조한다.
 - live 설정 파일은 `~/.nanobot/config.json`, `~/.nanobot/config.api.json`, `~/.nanobot/nanobot.env` 이다.
+- API 키, channel token, WebUI/bootstrap secret 같은 실운영 credential 은 일반 shell init 파일보다 `~/.nanobot/nanobot.env` 를 우선 기준으로 확인한다.
 - `LOCAL_LLM_MODEL` 같은 핵심 환경변수는 일반 shell init 파일이 아니라 `~/.nanobot/nanobot.env` 에서 공급된다.
 - WebUI 소스는 `/Volumes/ExtData/Nanobot/source/webui` 이고, production bundle 출력 경로는 `/Volumes/ExtData/Nanobot/source/nanobot/web/dist` 이다.
 
