@@ -13,7 +13,8 @@
 - 실제 source tree 기준 작업 경로는 `/Volumes/ExtData/Nanobot/source` 이다.
 - 현재 사용자 실행 `nanobot` 엔트리포인트는 `~/.local/bin/nanobot` 이고, `uv tool` 기반 editable install 경로를 통해 source tree 를 참조한다.
 - live 설정 파일은 `~/.nanobot/config.json`, `~/.nanobot/config.api.json`, `~/.nanobot/nanobot.env` 이다.
-- API 키, channel token, WebUI/bootstrap secret 같은 실운영 credential 은 일반 shell init 파일보다 `~/.nanobot/nanobot.env` 를 우선 기준으로 확인한다.
+- API 키, channel token, WebUI 로그인 password 입력값, WebUI/bootstrap secret 같은 실운영 credential 은 일반 shell init 파일보다 `~/.nanobot/nanobot.env` 를 우선 기준으로 확인한다.
+- 특히 WebUI 로그인 화면에서 password 를 입력해야 할 때는 shell init 파일이나 추측값이 아니라 `~/.nanobot/nanobot.env` 의 관련 값(예: `NANOBOT_WEBUI_BOOTSTRAP_SECRET`)을 먼저 확인한다.
 - `LOCAL_LLM_MODEL` 같은 핵심 환경변수는 일반 shell init 파일이 아니라 `~/.nanobot/nanobot.env` 에서 공급된다.
 - WebUI 소스는 `/Volumes/ExtData/Nanobot/source/webui` 이고, production bundle 출력 경로는 `/Volumes/ExtData/Nanobot/source/nanobot/web/dist` 이다.
 
@@ -99,6 +100,12 @@ curl -fsS -H 'X-Nanobot-Auth: <bootstrap-secret>' http://127.0.0.1:8765/webui/bo
 - launchd live runtime 과 수동 foreground 프로세스가 동시에 떠서 포트 충돌을 만들지 않게 주의한다.
 - `.github` 아래 instruction, skill, 문서는 실제 운영 경로와 모순되지 않게 유지한다.
 - smart-router, plugin, gateway, launchd, editable install 동작이 바뀌면 필요 시 `/Volumes/ExtData/Nanobot/docs/operations/status-summary/` 아래 운영 메모도 함께 갱신한다.
+
+## Superpowers 연동
+
+- `.github/skills/` 아래 Superpowers 관련 skill 은 upstream `obra/superpowers` 원문을 vendoring 한 복사본으로 취급한다.
+- 사용자가 `superpowers`, `workflow`, `brainstorm`, `design`, `spec`, `plan`, `TDD`, `debug`, `root cause`, `verify` 같은 표현을 쓰거나 구조화된 진행을 원하면 먼저 `.github/skills/using-superpowers/SKILL.md` 를 기준 진입점으로 본다.
+- vendored Superpowers skill 내용과 Nanobot 운영 제약이 충돌하면 이 문서의 규칙이 우선한다.
 
 ## 우선순위 가이드
 
