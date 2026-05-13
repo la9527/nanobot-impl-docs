@@ -60,6 +60,7 @@
 - Telegram linked WebUI duplicate assistant 표시와 `/status` pending root-cause 수정
 - owner-aware control surface, owner memory/task backbone, Gmail, Calendar, proactive phase-1
 - status-summary 문서 구조 이동과 관련 운영 정리
+- WebUI context window indicator, lazy hydrate, detail disclosure refinement, local timestamp formatting
 
 상세 범위와 근거 문서는 아래를 본다.
 

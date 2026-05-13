@@ -18,7 +18,7 @@
 - `.github-source/`
   - Nanobot workspace instruction, file instruction, skill 의 실제 버전관리 위치
 - `planning/`
-  - active queue, conceptual draft, execution backlog
+  - active queue, conceptual draft, execution backlog, focused feature workplan
 - `operations/`
   - 날짜형 status summary 와 운영 검증 메모
 - `guide/`
@@ -36,6 +36,8 @@
   - 지금 열려 있는 작업, validation, defer 상태를 짧게 유지하는 문서
 - `planning/execution-backlog/`
   - 새 제품 구현 slice 를 정의하는 실행 workplan 디렉터리
+- `planning/webui-context-window/`
+  - WebUI 채팅 헤더의 context window indicator 와 detail disclosure workplan
 - `guide/`
   - 현재 사용자/운영자 기준 설명 문서
 - `operations/status-summary/`
