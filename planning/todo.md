@@ -12,28 +12,7 @@
 
 ## 1. Active Now
 
-### P1. linked Telegram / WebUI 후속 안정화
-
-- [ ] linked Telegram session history 에 과거부터 남아 있는 duplicate row 범위를 샘플링해 backend 원인 정리가 필요한지 판단
-- [ ] linked Telegram thread 의 live event 와 polled history merge 규칙을 문서화할지 결정
-- [ ] 필요 시 linked Telegram command-result 전용 narrow regression test 를 추가할지 판단
-
-### P1. live UI follow-up
-
-- [ ] WebUI 일정 action result strip 이 history 하단에 고정처럼 남는지 다시 점검
-- [ ] 기본 표시를 `한 줄 compact summary + 세부 정보 disclosure` 패턴으로 유지하는지 live 기준 확인
-- [ ] metadata 가 풍부한 session 기준으로 세부 정보 패널의 `대화` / `작업` / `메모리` 표현을 다시 검증
-
-### P1. thread-shell test 정리
-
-- [ ] broader `webui/src/tests/thread-shell.test.tsx` 를 현재 UI 용어와 상태 구조 기준으로 다시 정리
-- [ ] linked-session regressions 는 unrelated expectation drift 와 분리해 좁은 gate 중심으로 재배치
-
-### P2. WebUI command surface / dashboard split
-
-- [ ] [07 WebUI Command Menu And Dashboard Split Phase 1](./execution-backlog/07-webui-command-menu-and-dashboard-split-phase1.md) 기준으로 slash command palette 신규 항목 반영 범위 확정
-- [ ] `대시보드` 와 `새 채팅` surface 분리 설계에 따라 explicit view state 로 정리
-- [ ] dashboard feed box title icon 및 new-chat 전용 quick action strip 반영 범위 확정
+- 현재 active item 없음
 
 ## 2. Next Candidates
 
@@ -52,7 +31,12 @@
 
 - `모델 선택 /model`, `응답 footer /status /usage`, Telegram WebUI websocket mirror 기반 작업
 - Telegram linked WebUI duplicate assistant 표시와 `/status` pending root-cause 수정
+- 일반 WebUI websocket + Telegram linked 채팅 duplicate reply 후속 root-cause 정리와 live 12회 검증 완료
 - 실채널 validation 마감: `/model smart-router` close 판단, Telegram mirror sync 정리, linked Telegram WebUI inline `/status` `/help` `/usage` 저장/표시 정리
+- linked Telegram `/model list` duplicate surface 재검증: raw history 샘플링 결과 backend duplicate persist 는 현재 확인되지 않았고, reload 후 stale client state 만 정리되는 상태로 판정
+- action result strip / compact summary / details panel follow-up 검증: pinned card, stale status 억제, linked-session detail sheet, owner-aware `대화` / `작업` / `메모리` 표현 focused gate 확인
+- `webui/src/tests/thread-shell.test.tsx` 정리와 linked-session focused gate 분리: `thread-shell-linked-session.test.tsx` 로 Telegram/external session slice 를 분리했고, focused vitest gate 로 47개 테스트 통과 확인
+- `07 WebUI Command Menu And Dashboard Split Phase 1` 재검증: `dashboard/new-chat` explicit state, dashboard-only feed surface, new-chat 전용 quick action strip, slash palette runtime payload 동기화, dashboard title icon을 focused test 30개와 production build 기준으로 다시 확인
 - owner-aware control surface, owner memory/task backbone, Gmail, Calendar, proactive phase-1
 - status-summary 문서 구조 이동과 관련 운영 정리
 - WebUI context window indicator, lazy hydrate, detail disclosure refinement, local timestamp formatting
@@ -75,5 +59,5 @@
 
 ## 5. 현재 한 줄 판단
 
-- 구현 backlog 의 큰 덩어리는 1차로 정리됐고, 지금 남은 핵심은 `linked Telegram / WebUI 후속 안정화` 와 `live UI follow-up` 이다.
+- 구현 backlog 의 큰 덩어리는 1차로 정리됐고, linked Telegram / WebUI 후속 안정화와 live UI follow-up 중 대부분은 raw history 샘플링과 focused gate 로 1차 close 됐다.
 - 새 기능을 더 벌리기보다, 이미 반영한 slice 를 운영 기준으로 다시 확인하고 필요한 경우에만 다음 backlog 문서를 여는 상태로 본다.

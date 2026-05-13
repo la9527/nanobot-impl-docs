@@ -2,7 +2,7 @@
 
 ## 문서 목적
 
-이 문서는 2026-05-13 기준으로 Telegram linked WebUI thread 에서 확인된 중복 assistant 표시와 `/status` pending 이슈, 그리고 heartbeat periodic task 가 WebUI idle 상태에서 내부 지시문을 노출하던 경로의 원인, 구현 수정, live 반영 및 검증 상태를 운영 메모 형태로 남기기 위한 문서다.
+이 문서는 2026-05-13 기준으로 Telegram linked WebUI thread 에서 확인된 중복 assistant 표시와 `/status` pending 이슈, heartbeat periodic task 가 WebUI idle 상태에서 내부 지시문을 노출하던 경로, 그리고 후속 WebUI duplicate reply root-cause 및 live 다회 검증 결과를 운영 메모 형태로 남기기 위한 문서다.
 
 ## 현재 상태 요약
 
@@ -16,6 +16,7 @@
 - live gateway health 는 `http://127.0.0.1:18790/health` 에서 `{"status": "ok"}` 로 확인했다.
 - live WebUI bootstrap 은 `X-Nanobot-Auth` 헤더 포함 호출 기준으로 `200 OK` 와 token 발급이 확인됐다.
 - Telegram linked WebUI thread 에서 같은 assistant 답변이 연속 중복 노출되던 문제는 현재 browser 기준으로 재현되지 않았다.
+- 일반 WebUI websocket thread 와 Telegram linked thread 모두에서 assistant reply duplicate 후속 이슈를 다시 확인했고, 2026-05-13 늦은 밤 live browser 기준 12회 turn 검증에서는 재현되지 않았다.
 - 같은 thread 에서 `/status` 실행 시 Telegram 에만 결과가 가고 WebUI 는 계속 pending 으로 남던 문제는 현재 live browser 기준으로 재현되지 않는다.
 - WebUI idle 상태에서 heartbeat morning briefing 내부 지시문이 assistant 메시지처럼 노출되던 문제는 현재 source 수정과 launchd 재기동 후 재현 경로가 차단된 상태다.
 - linked Telegram WebUI thread 에서 `/help`, `/status`, `/usage` 같은 inline slash command 본문이 markdown 대신 plain-text 규칙으로 표시되어 줄바꿈과 원문 기호가 보존되도록 수정했다.
@@ -71,6 +72,41 @@
 - `webui/src/components/MessageBubble.tsx` 에서는 `renderAs === "text"` 인 assistant message 를 markdown 대신 `whitespace-pre-wrap` plain-text block 으로 렌더해 slash command 응답 본문이 그대로 보이게 바꿨다.
 - 관련 회귀는 `webui/src/tests/message-bubble.test.tsx`, `webui/src/tests/useSessions.test.tsx`, `webui/src/tests/useNanobotStream.test.tsx`, `tests/channels/test_websocket_channel.py` 로 추가했다.
 
+### 7. todo P1 follow-up 을 추가로 재검증해 close 범위를 정리했다
+
+- live browser 에서 보였던 Telegram linked `/model list` 이중 표시는 raw persisted history 중복이 아니라 stale client state 로 판단했다.
+- authenticated `GET /api/sessions/telegram:8688817632/messages` raw payload 를 직접 확인한 결과, `/model list` user turn 은 3개였고 각 turn 에 대응하는 assistant row 도 3개뿐이었다.
+- 해당 assistant row 3개는 모두 `metadata.render_as = "text"` 와 `_webui_bridge = true` 를 갖고 있었고, 한 turn 당 같은 assistant row 가 두 번 저장된 흔적은 없었다.
+- 같은 thread 를 reload 한 뒤에는 `Model Targets` markdown heading duplicate 는 사라지고 `whitespace-pre-wrap` plain-text block 만 남았으므로, 이번 slice 의 backend persistence 회귀로 보지는 않는다.
+- linked Telegram history sampling 과 live event/polled history merge 규칙은 이 메모에 운영 근거로 남겼고, 별도 새 문서를 여는 것보다는 현재 status-summary 기준으로 유지하기로 했다.
+- linked-session slice 는 이번 라운드에서 `webui/src/tests/thread-shell-linked-session.test.tsx` 로 분리했고, Telegram/external session focused gate 로 유지하기로 했다. 남은 `thread-shell.test.tsx` 는 owner-aware summary 와 action-result 중심 broader shell gate 로 좁혀졌다.
+
+### 8. action result / detail panel follow-up 은 focused gate 로 다시 확인했다
+
+- `webui/src/tests/thread-shell-action-result.test.tsx` 로 pinned action result 가 scroll 영역 위에 유지되는지와 dismiss clear 가 동작하는지를 다시 확인했다.
+- `webui/src/tests/thread-status.test.ts` 와 targeted `thread-shell.test.tsx` 케이스로 action result card 가 이미 있을 때 failed status block 이 중복되지 않는지 다시 확인했다.
+- `webui/src/tests/thread-inline-action-result.test.tsx` 로 `한 줄 compact summary + 세부 정보 disclosure` 패턴이 메일/calendar inline result 에서 유지되는지 다시 확인했다.
+- targeted `thread-shell.test.tsx` 케이스로 linked external session detail sheet, owner-aware summary, blocked/recent completion hint, duplicate-suppressed proactive state 표현을 다시 검증했다.
+- `webui/src/tests/session-metadata.test.ts` 로 metadata localization 경로도 함께 확인해 `대화` / `작업` / `메모리` 축의 detail surface 가 현재 계약과 어긋나지 않는 상태로 봤다.
+
+### 9. WebUI command surface / dashboard split phase-1 은 runtime payload와 focused gate 기준으로 close 했다
+
+- `App.tsx` 의 `emptyThreadView` 와 `Sidebar.tsx` action 연결을 다시 확인한 결과, `대시보드` 와 `새 채팅` 은 이미 explicit state 로 분리되어 있었다.
+- `ThreadShell.tsx` 는 `dashboard` 에서만 `AssistantDashboard` feed surface 를 노출하고, `new-chat` 에서만 hero composer 아래 quick action strip 을 보이도록 이미 분기돼 있었다.
+- live `/api/commands` payload 를 직접 조회한 결과 현재 명령 집합은 `/new`, `/status`, `/model`, `/usage`, `/mail`, `/calendar`, `/history`, `/dream`, `/dream-log`, `/dream-restore`, `/help` 를 포함했고, WebUI palette source-of-truth 는 이 endpoint 를 그대로 사용하고 있었다.
+- 남아 있던 drift 는 test fixture 가 `/dream-restore` 를 빠뜨리고 있던 coverage gap 뿐이어서, `webui/src/tests/api.test.ts` 와 `webui/src/tests/thread-composer.test.tsx` 를 runtime payload 기준으로 보강했다.
+- 이후 `npm test -- src/tests/api.test.ts src/tests/thread-composer.test.tsx src/tests/app-layout.test.tsx` 와 `npm run build` 를 다시 실행해 phase-1 범위를 focused gate 로 재검증했다.
+
+### 10. WebUI duplicate reply 후속 이슈는 stream 단계와 persisted history 단계로 나눠 root cause 를 정리했다
+
+- 일반 WebUI websocket chat 에서 같은 assistant 답변이 두 번 보이는 후속 제보가 다시 들어왔고, 이번에는 live stream 단계와 persisted history hydrate 단계를 분리해 확인했다.
+- 첫 번째 원인은 `webui/src/hooks/useNanobotStream.ts` 에서 `delta -> stream_end -> final message -> turn_end` 순서일 때 streamed placeholder ID 를 `stream_end` 에서 너무 일찍 잃어 final assistant message 가 기존 bubble 을 교체하지 못하던 경로였다.
+- 이 부분은 마지막 streamed message ID 를 turn 종료 전까지 유지하도록 수정했고, `webui/src/tests/useNanobotStream.test.tsx` 에 동일 event sequence 회귀를 추가했다.
+- 두 번째 원인은 `webui/src/hooks/useSessions.ts` 에서 persisted history assistant row 두 개가 같은 content 와 같은 `visible_reasoning` 을 가진 채 저장되면, hydration 이 `trace + assistant + trace + assistant` 로 풀리면서 중복 답변이 그대로 남던 경로였다.
+- 이 부분은 UI message hydrate 전에 raw assistant history row 단계에서 duplicate collapse 를 먼저 수행하도록 바꿨고, 동점일 때는 뒤의 whitespace 변형이 아니라 먼저 저장된 row 를 유지하도록 tie-break 를 정리했다.
+- 관련 회귀는 `webui/src/tests/useSessions.test.tsx` 에 `visible_reasoning` 이 붙은 duplicate persisted assistant reply collapse 케이스를 추가해 검증했다.
+- 결과적으로 이번 duplicate 이슈는 단순 frontend append 방지 하나가 아니라 `live stream dedupe + persisted history dedupe` 두 단계가 같이 있어야 막히는 구조로 정리됐다.
+
 ## 이번에 확인된 운영 포인트
 
 ### 1. linked Telegram 이슈는 frontend 만이 아니라 backend inline command path 도 같이 봐야 한다
@@ -114,8 +150,26 @@ PYTHONPATH=$PWD ./.venv/bin/pytest tests/cli/test_commands.py -q -k 'heartbeat_e
 # 2 passed
 
 cd /Volumes/ExtData/Nanobot/source/webui
-npm test -- src/tests/thread-shell.test.tsx
-# 43 passed
+npm test -- src/tests/thread-shell-linked-session.test.tsx src/tests/thread-shell.test.tsx
+# 47 passed
+
+npm test -- src/tests/api.test.ts src/tests/thread-composer.test.tsx src/tests/app-layout.test.tsx
+# 30 passed
+
+npm run build
+# 통과
+
+npm test -- src/tests/thread-shell-action-result.test.tsx src/tests/thread-status.test.ts src/tests/session-metadata.test.ts
+# 6 passed
+
+npm test -- src/tests/thread-shell.test.tsx -t "renders the latest mail action result from session metadata in the pinned card|renders approval pending badge for a mail send action result|does not duplicate a failed status block when an action result card is already shown"
+# 3 passed, 40 skipped
+
+npm test -- src/tests/thread-shell.test.tsx -t "keeps linked session details available after loading completed external history|renders linked continuity metadata in the external session summary|renders an owner-aware summary block from linked sessions and pending approvals|renders blocked and recent completion hints in the owner-aware summary|renders duplicate-suppressed proactive state in the owner-aware summary"
+# 5 passed, remaining skipped
+
+npm test -- src/tests/thread-inline-action-result.test.tsx
+# 3 passed
 
 npm test -- src/tests/message-bubble.test.tsx src/tests/useSessions.test.tsx src/tests/useNanobotStream.test.tsx
 # 39 passed
@@ -145,11 +199,18 @@ live browser 기준 확인:
 - `/status` 실행 후 WebUI 에 assistant status bubble 이 즉시 붙는 것을 확인했다.
 - 같은 turn 에서 `연결된 외부 세션의 응답을 기다리고 있습니다.` 문구가 최종 DOM 에 남지 않는 것을 확인했다.
 - 중복 assistant bubble 은 현재 동일 thread 에서 재현되지 않았다.
+- `/model list` duplicate surface 는 raw history API 와 reload 후 DOM 상태를 같이 확인한 결과 persisted backend duplicate 가 아니라 stale client state 로 판정했다.
 - heartbeat prompt 누출 이슈는 이번 메모 작성 시점에 live browser 에서 재현을 다시 만들지 않았고, focused test + launchd live health 재확인 기준으로 차단 상태만 확인했다.
+- duplicate reply 후속 검증은 authenticated WebUI browser 에서 일반 WebUI websocket session 6회, Telegram linked session 6회로 총 12회 turn 을 실제 전송해 확인했다.
+- 일반 WebUI websocket session 에서는 짧은 응답 4회와 긴 응답 2회를 보냈고, 각 turn 마다 `Copy reply` 증가량이 정확히 `+1` 이며 reload 후 hydrate 상태에서도 추가 bubble 이 생기지 않는 것을 확인했다.
+- Telegram linked session 에서는 짧은 응답 3회와 긴 응답 3회를 보냈고, 각 turn 마다 linked-session pending 종료 후 `Copy reply` 증가량이 정확히 `+1` 이며 settle 구간 이후 추가 증가가 없는 것을 확인했다.
+- authenticated `GET /api/sessions/websocket:6eaca585-85f3-4c61-aac2-d558a5612876/messages` 조회 결과 최근 14행은 정확히 `user 7 + assistant 7` 이었고, assistant row 는 모두 단일 persisted row 였다.
+- authenticated `GET /api/sessions/telegram:8688817632/messages` 조회 결과 최근 12행은 정확히 `user 6 + assistant 6` 이었고, linked Telegram assistant row 중 같은 turn 이 두 번 저장된 흔적은 없었다.
 
 ## 현재 남아 있는 제약과 리스크
 
 - 기존 session history 에 이미 누적된 비연속 duplicate row 까지 정리하는 migration 은 아직 없다. 현재 보강은 연속 duplicate collapse 와 live append 억제에 집중돼 있다.
+- 현재 live 12회 검증에서는 duplicate reply 를 재현하지 못했지만, 향후 다시 보이면 동일 세션 key 기준 raw history 와 browser hydrate 상태를 같이 캡처해 stream 단계인지 persisted history 단계인지 먼저 분리해서 봐야 한다.
 - `thread-shell` 전체 파일은 현재도 다양한 linked-session 시나리오를 함께 다루므로, 이후 회귀가 생기면 narrow test 를 먼저 추가하는 편이 안전하다.
 - heartbeat periodic task 의 최종 target routing 은 유지했지만, WebUI idle 상태에서 같은 누출이 다시 보이면 websocket outbound 경로 또는 mirrored delivery 경로를 추가로 점검해야 한다.
 - `/Volumes/ExtData/Nanobot/docs` 는 source 와 별도 git repo 이므로 status-summary 와 guide 문서 변경은 source repo commit/push 와 분리된 docs repo history 로 추적된다.
@@ -176,10 +237,8 @@ curl -fsS -H 'X-Nanobot-Auth: <bootstrap-secret>' http://127.0.0.1:8765/webui/bo
 
 ## 다음 작업 후보
 
-- linked Telegram session history 에 과거부터 남아 있는 duplicate row 의 범위를 한번 더 샘플링해, backend 원인 정리가 필요한지 판단한다.
-- linked Telegram command-result 전용 narrow regression test 를 더 추가할지 판단한다.
-- linked Telegram thread 의 live event 와 polled history merge 규칙을 더 명시적으로 문서화할지 검토한다.
+- stale client state 가 다시 보이면 Telegram linked thread reload/cache invalidation 타이밍을 추가 샘플링한다.
 
 ## 결론
 
-2026-05-13 작업의 핵심은 Telegram linked WebUI 이슈를 단순 UI glitch 로 보지 않고, history hydration, live websocket mirror, inline slash command persistence, waiting placeholder cache 를 각각 분리해 원인별로 정리한 것이다. 현재는 focused test, production build, launchd live runtime, authenticated bootstrap, 실제 browser turn 검증까지 마친 상태이며, 운영 관점에서 보면 Telegram 과 WebUI linked thread 의 `/status` 응답 흐름은 다시 일치하는 상태로 돌아왔다.
+2026-05-13 작업의 핵심은 Telegram linked WebUI 이슈를 단순 UI glitch 로 보지 않고, history hydration, live websocket mirror, inline slash command persistence, waiting placeholder cache, 그리고 duplicate reply 의 `stream 단계 / persisted history 단계` 를 각각 분리해 원인별로 정리한 것이다. 현재는 focused test, production build, launchd live runtime, authenticated bootstrap, 일반 WebUI 6회 + Telegram linked 6회 실제 browser turn 검증, raw history API 대조까지 마친 상태이며, 운영 관점에서 보면 duplicate reply 와 linked `/status` 흐름은 다시 안정화된 상태로 돌아왔다.
