@@ -2,14 +2,14 @@
 
 ## 문서 목적
 
-이 문서는 2026-05-13 기준으로 Telegram linked WebUI thread 에서 확인된 중복 assistant 표시와 `/status` pending 이슈의 원인, 구현 수정, live 반영 및 검증 상태를 운영 메모 형태로 남기기 위한 문서다.
+이 문서는 2026-05-13 기준으로 Telegram linked WebUI thread 에서 확인된 중복 assistant 표시와 `/status` pending 이슈, 그리고 heartbeat periodic task 가 WebUI idle 상태에서 내부 지시문을 노출하던 경로의 원인, 구현 수정, live 반영 및 검증 상태를 운영 메모 형태로 남기기 위한 문서다.
 
 ## 현재 상태 요약
 
 현재 확인된 상태는 다음과 같다.
 
 - source repo `/Volumes/ExtData/Nanobot/source` 는 현재 `feature/nanobot-fork-runtime` 브랜치 기준이다.
-- source repo working tree 는 현재 이번 slice 를 포함한 수정 사항이 남아 있는 상태이며, focused test 와 build 는 통과했다.
+- source repo 에는 이번 slice 의 runtime/test/doc 수정이 반영돼 있고, focused test 와 build 는 통과했다.
 - Nanobot gateway 는 launchd label `com.nanobot.gateway` 로 실행 중이다.
 - Nanobot API 는 launchd label `com.nanobot.api` 로 실행 중이다.
 - local llama runtime 은 launchd label `com.nanobot.llama-lfm2-server` 로 실행 중이다.
@@ -17,6 +17,7 @@
 - live WebUI bootstrap 은 `X-Nanobot-Auth` 헤더 포함 호출 기준으로 `200 OK` 와 token 발급이 확인됐다.
 - Telegram linked WebUI thread 에서 같은 assistant 답변이 연속 중복 노출되던 문제는 현재 browser 기준으로 재현되지 않았다.
 - 같은 thread 에서 `/status` 실행 시 Telegram 에만 결과가 가고 WebUI 는 계속 pending 으로 남던 문제는 현재 live browser 기준으로 재현되지 않는다.
+- WebUI idle 상태에서 heartbeat morning briefing 내부 지시문이 assistant 메시지처럼 노출되던 문제는 현재 source 수정과 launchd 재기동 후 재현 경로가 차단된 상태다.
 - `/Volumes/ExtData/Nanobot/docs` 는 source 와 별도 git repo 이므로, 아래 운영 메모 갱신은 source repo commit 과 분리된 docs repo commit 으로 관리된다.
 
 ## 이번에 반영한 주요 작업
@@ -52,6 +53,15 @@
 - `curl -fsS http://127.0.0.1:18790/health` 와 authenticated `GET /webui/bootstrap` 으로 gateway/WebUI 기본 상태를 확인했다.
 - 마지막으로 live browser 에서 실제 Telegram linked thread 를 열고 `/status` 를 다시 실행해 결과 bubble 과 pending 문구 소거를 직접 확인했다.
 
+### 5. heartbeat periodic task 가 WebUI 에 내부 지시문을 노출하던 경로를 차단했다
+
+- idle 상태의 WebUI 에서 `[Your response will be delivered directly to the user's messaging app ...]` 같은 heartbeat preamble 이 assistant 메시지처럼 보이는 현상이 추가로 확인됐다.
+- git history 확인 결과 이 preamble 자체는 `fix(heartbeat): prevent internal reasoning leaks and finalization fallback in delivery` 계열 수정에서 heartbeat 최종 응답 품질을 높이기 위해 도입된 안전장치였다.
+- 반면 heartbeat 실행을 실제 활성 channel context 로 태우는 구조는 더 이른 `fix(heartbeat): route heartbeat runs to enabled chat context` 계열 수정에서 들어왔고, 이후 `webui_first` proactive routing 과 결합되면서 WebUI target 에서도 내부 실행 입력이 흘러나올 수 있는 조건이 만들어졌다.
+- 이번 수정에서는 `nanobot/cli/commands.py` 의 `on_heartbeat_execute()` 가 target channel 과 상관없이 항상 내부 `cli/direct` 채널에서 `agent.process_direct(...)` 를 실행하도록 바꿨다.
+- 최종 전달은 기존처럼 `on_heartbeat_notify()` 에서 target channel 정책을 따라가므로, delivery behavior 는 유지하면서 WebUI 누출 경로만 차단했다.
+- 관련 회귀는 `tests/cli/test_commands.py` 에 heartbeat target 이 `websocket` 이어도 execution channel 은 `cli/direct` 로 고정되는 focused test 를 추가해 검증했다.
+
 ## 이번에 확인된 운영 포인트
 
 ### 1. linked Telegram 이슈는 frontend 만이 아니라 backend inline command path 도 같이 봐야 한다
@@ -76,6 +86,12 @@
 - 하지만 launchd 상태와 gateway log 를 확인한 뒤 재시도하면 정상 복구됐다.
 - 운영 검증 시에는 restart 직후 1회 실패만으로 장애로 단정하지 않는 편이 맞다.
 
+### 5. heartbeat 는 delivery target 과 execution channel 을 분리해서 봐야 한다
+
+- 현재 구조에서 heartbeat 결과가 어느 채널에 최종 전달되는지는 proactive target policy 가 결정한다.
+- 하지만 실제 LLM 실행은 내부 heartbeat session 과 `cli/direct` 채널에서 수행해야 WebUI, Telegram, 기타 external channel 로 중간 출력이 새지 않는다.
+- follow-through 를 위해 channel session 에 assistant delivery 를 주입하는 경로는 `notify` 단계에서 유지하면 충분하고, execution 단계까지 target channel 과 결합할 필요는 없었다.
+
 ## 검증 결과
 
 source-tree 기준 focused 검증:
@@ -84,6 +100,9 @@ source-tree 기준 focused 검증:
 cd /Volumes/ExtData/Nanobot/source
 PYTHONPATH=$PWD ./.venv/bin/pytest tests/agent/test_command_persistence.py -q
 # 3 passed
+
+PYTHONPATH=$PWD ./.venv/bin/pytest tests/cli/test_commands.py -q -k 'heartbeat_executes_explicit_tasks_without_proactive_context or heartbeat_executes_on_internal_channel_even_with_websocket_target'
+# 2 passed
 
 cd /Volumes/ExtData/Nanobot/source/webui
 npm test -- src/tests/thread-shell.test.tsx
@@ -110,11 +129,13 @@ live browser 기준 확인:
 - `/status` 실행 후 WebUI 에 assistant status bubble 이 즉시 붙는 것을 확인했다.
 - 같은 turn 에서 `연결된 외부 세션의 응답을 기다리고 있습니다.` 문구가 최종 DOM 에 남지 않는 것을 확인했다.
 - 중복 assistant bubble 은 현재 동일 thread 에서 재현되지 않았다.
+- heartbeat prompt 누출 이슈는 이번 메모 작성 시점에 live browser 에서 재현을 다시 만들지 않았고, focused test + launchd live health 재확인 기준으로 차단 상태만 확인했다.
 
 ## 현재 남아 있는 제약과 리스크
 
 - 기존 session history 에 이미 누적된 비연속 duplicate row 까지 정리하는 migration 은 아직 없다. 현재 보강은 연속 duplicate collapse 와 live append 억제에 집중돼 있다.
 - `thread-shell` 전체 파일은 현재도 다양한 linked-session 시나리오를 함께 다루므로, 이후 회귀가 생기면 narrow test 를 먼저 추가하는 편이 안전하다.
+- heartbeat periodic task 의 최종 target routing 은 유지했지만, WebUI idle 상태에서 같은 누출이 다시 보이면 websocket outbound 경로 또는 mirrored delivery 경로를 추가로 점검해야 한다.
 - `/Volumes/ExtData/Nanobot/docs` 는 source 와 별도 git repo 이므로 status-summary 와 guide 문서 변경은 source repo commit/push 와 분리된 docs repo history 로 추적된다.
 
 ## 현재 기준 권장 운영 명령
@@ -124,6 +145,7 @@ git -C /Volumes/ExtData/Nanobot/source status --short --branch
 
 cd /Volumes/ExtData/Nanobot/source
 PYTHONPATH=$PWD ./.venv/bin/pytest tests/agent/test_command_persistence.py -q
+PYTHONPATH=$PWD ./.venv/bin/pytest tests/cli/test_commands.py -q -k 'heartbeat_executes_explicit_tasks_without_proactive_context or heartbeat_executes_on_internal_channel_even_with_websocket_target'
 
 cd /Volumes/ExtData/Nanobot/source/webui
 npm test -- src/tests/thread-shell.test.tsx
