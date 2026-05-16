@@ -22,7 +22,7 @@
 
 - Nanobot gateway 는 launchd label `com.nanobot.gateway` 로 운영한다.
 - Nanobot API 는 launchd label `com.nanobot.api` 로 운영한다.
-- local llama.cpp 계열 런타임은 launchd label `com.nanobot.llama-lfm2-server` 기준 운영 경로를 우선 확인한다.
+- local model 런타임은 launchd label `com.nanobot.local-model-lfm2`, `com.nanobot.local-model-qwen36` 기준 운영 경로를 우선 확인한다.
 - WebUI 브라우저 확인은 `http://127.0.0.1:8765/` 또는 실제 브라우저 새로고침 기준으로 본다.
 - WebUI bootstrap 확인 endpoint 는 `http://127.0.0.1:8765/webui/bootstrap` 이고, 최근 운영 기준으로는 `X-Nanobot-Auth` 또는 실제 브라우저 세션이 필요할 수 있다.
 - gateway health 확인은 `http://127.0.0.1:18790/health` 기준으로 본다.

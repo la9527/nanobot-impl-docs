@@ -10,7 +10,8 @@
 
 현재 바로 참고할 신규 slice:
 
-- [execution-backlog/07-webui-command-menu-and-dashboard-split-phase1.md](./execution-backlog/07-webui-command-menu-and-dashboard-split-phase1.md)
+- [execution-backlog/12-nanobot-local-llm-control-and-smart-router-default-phase1.md](./execution-backlog/12-nanobot-local-llm-control-and-smart-router-default-phase1.md)
+- [execution-backlog/08-local-model-runtime-unification-and-qwen36-phase1.md](./execution-backlog/08-local-model-runtime-unification-and-qwen36-phase1.md)
 
 ## 운영 원칙
 

@@ -12,7 +12,9 @@
 
 ## 1. Active Now
 
-- 현재 active item 없음
+- High priority: `qwen36` 을 phase-1 기본 local LLM 으로 두고, Nanobot에서 실행/종료/재시작/상태확인/기본 사용 대상으로 제어하며, WebUI Settings / Telegram 에서 설정할 수 있게 하고, smart-router `local` tier 가 그 로컬 LLM을 사용하도록 연결하는 phase-1 implementation 을 다음 작업으로 둔다.
+  - 계획 문서: [execution-backlog/12-nanobot-local-llm-control-and-smart-router-default-phase1.md](./execution-backlog/12-nanobot-local-llm-control-and-smart-router-default-phase1.md)
+  - 확정 기준: `qwen36` 기본, `~/.nanobot/nanobot.env` 직접 수정 금지, `~/.nanobot/local-llm.env` override 파일 사용, WebUI Settings 와 Telegram `/local-llm` 모두 phase-1 포함
 
 ## 2. Next Candidates
 
@@ -24,6 +26,7 @@
 - `telegram_v2` / Mini App 범위를 첫 runnable slice 수준으로 줄여 prototype 후보로 정리
 - Gmail/Calendar/proactive 후속 phase 는 새 요구가 생길 때 `planning/execution-backlog/07-*` 이후 문서로 다시 승격
 - Kakao 는 현재 reference/deferred 상태로 유지하고, 운영 ingress 와 권한 확인 결과만 참고 문서로 유지
+- `LLMTestTool_v2` 의 09/10/11 후속은 현재 선택적 고도화로 두고, 새 요구가 생길 때만 다시 active slice 로 승격
 
 ## 3. Completed And Moved Out
 
@@ -40,6 +43,7 @@
 - owner-aware control surface, owner memory/task backbone, Gmail, Calendar, proactive phase-1
 - status-summary 문서 구조 이동과 관련 운영 정리
 - WebUI context window indicator, lazy hydrate, detail disclosure refinement, local timestamp formatting
+- `09-nanobot-llmtesttool-v2-sequential-benchmark-phase1.md`, `10-nanobot-llmtesttool-v2-answer-evaluation-phase1.md`, `11-nanobot-llmtesttool-v2-usability-results-reporting-phase1.md` core 구현 반영
 
 상세 범위와 근거 문서는 아래를 본다.
 
@@ -59,5 +63,5 @@
 
 ## 5. 현재 한 줄 판단
 
-- 구현 backlog 의 큰 덩어리는 1차로 정리됐고, linked Telegram / WebUI 후속 안정화와 live UI follow-up 중 대부분은 raw history 샘플링과 focused gate 로 1차 close 됐다.
-- 새 기능을 더 벌리기보다, 이미 반영한 slice 를 운영 기준으로 다시 확인하고 필요한 경우에만 다음 backlog 문서를 여는 상태로 본다.
+- linked Telegram / WebUI 후속 안정화와 `local-models` 공용 계층, `LLMTestTool_v2` 09/10/11 core slice 는 1차 정리가 끝났다.
+- 현재 최우선 active candidate 는 검증된 `qwen36` local LLM을 WebUI/Telegram 설정 surface, Nanobot 기본 local route, smart-router `local` tier 로 연결하는 `12` slice 이며, 확정된 기준에 맞춰 implementation 으로 진행한다.

@@ -39,6 +39,11 @@
 현재 다음 active candidate 로는 아래 slice 를 열어 둔다.
 
 - [07-webui-command-menu-and-dashboard-split-phase1.md](./07-webui-command-menu-and-dashboard-split-phase1.md)
+- [08-local-model-runtime-unification-and-qwen36-phase1.md](./08-local-model-runtime-unification-and-qwen36-phase1.md)
+- [09-nanobot-llmtesttool-v2-sequential-benchmark-phase1.md](./09-nanobot-llmtesttool-v2-sequential-benchmark-phase1.md)
+- [10-nanobot-llmtesttool-v2-answer-evaluation-phase1.md](./10-nanobot-llmtesttool-v2-answer-evaluation-phase1.md)
+- [11-nanobot-llmtesttool-v2-usability-results-reporting-phase1.md](./11-nanobot-llmtesttool-v2-usability-results-reporting-phase1.md)
+- [12-nanobot-local-llm-control-and-smart-router-default-phase1.md](./12-nanobot-local-llm-control-and-smart-router-default-phase1.md)
 
 ## 3. 작업 순서
 
@@ -79,7 +84,38 @@ proactive는 체감 가치는 크지만 annoyance risk도 커서, owner/task/act
 
 - [07-webui-command-menu-and-dashboard-split-phase1.md](./07-webui-command-menu-and-dashboard-split-phase1.md)
 
+### 3.7 현재 active local model candidate
+
+- [08-local-model-runtime-unification-and-qwen36-phase1.md](./08-local-model-runtime-unification-and-qwen36-phase1.md)
+
+이 단계는 기존 `infra/scripts/llama/` 운영 경로를 `local-models` 공용 계층으로 재정리하고, Qwen3.6 MLX runtime 과 focused benchmark 흐름을 함께 붙이는 인프라 중심 slice 다.
+
 이 단계는 slash command 발견성과 `대시보드` / `새 채팅` surface 분리를 함께 정리하는 WebUI 중심 slice 다.
+
+### 3.8 다음 benchmark harness candidate
+
+- [09-nanobot-llmtesttool-v2-sequential-benchmark-phase1.md](./09-nanobot-llmtesttool-v2-sequential-benchmark-phase1.md)
+
+이 단계는 기존 `LLMTestTool` 의 OpenClaw 결합을 걷어내고, `LLMTestTool_v2` 를 Nanobot `local-models` control plane 위에서 순차 benchmark 와 lifecycle timing 비교를 수행하는 도구로 다시 세우는 benchmark 전용 slice 다.
+
+### 3.9 다음 answer evaluation candidate
+
+- [10-nanobot-llmtesttool-v2-answer-evaluation-phase1.md](./10-nanobot-llmtesttool-v2-answer-evaluation-phase1.md)
+
+이 단계는 `LLMTestTool_v2` 가 현재 저장하는 `results/runs/<run-id>/...` artifact, 특히 stress row 와 run manifest 를 기반으로 answer quality evaluation layer 와 pairwise judge flow 를 추가하는 benchmark 후처리/eval slice 다. 2026-05-16 기준으로 `11` usability/reporting slice 의 core 구현이 대부분 반영됐으므로, 이제 이 문서는 그 run 중심 구조 위에 eval 계층을 붙이는 next active candidate 로 읽는 편이 맞다.
+현재는 deterministic eval, pairwise eval, prompt-set metadata, `latest-eval` entrypoint, OpenAI judge 기반 single-answer eval, explicit pairwise judge flow, bundled prompt-set rubric/reference 보강, pricing catalog fallback, markdown provenance 노출, interpretation 문구 생성까지 core 범위가 반영됐다. 최근에는 `Outcome Interpretation` 까지 추가돼 pass stability 와 pairwise split 해석이 report 본문에 바로 노출된다. pricing catalog 범위 확대와 interpretation 규칙 정교화는 현재 기준 필수 backlog 가 아니라 선택적 고도화로 둔다.
+
+### 3.10 high-priority LLMTestTool UX candidate
+
+- [11-nanobot-llmtesttool-v2-usability-results-reporting-phase1.md](./11-nanobot-llmtesttool-v2-usability-results-reporting-phase1.md)
+
+이 단계는 `LLMTestTool_v2` 의 결과 디렉터리 구조, 실행 progress log, interactive launcher, 전체 suite 실행 명령, 최종 report chart 를 정리하는 high-priority usability slice 다. 2026-05-16 기준으로 core phase-1 구현은 대부분 반영됐고, planning 문서는 완료/부분 완료 상태와 검증 범위를 함께 기록하는 reference 로 본다. answer evaluation 보다 먼저 적용해 이후 평가 결과도 단순한 run 중심 구조에 얹히게 하는 편이 맞다.
+
+### 3.11 high-priority local LLM control and default route candidate
+
+- [12-nanobot-local-llm-control-and-smart-router-default-phase1.md](./12-nanobot-local-llm-control-and-smart-router-default-phase1.md)
+
+이 단계는 기존 `local-models` 공용 계층을 Nanobot 실제 응답 경로와 WebUI/Telegram 설정 surface 에 연결하는 후속 slice 다. `qwen36` 을 phase-1 기본 local LLM 으로 두고, `~/.nanobot/nanobot.env` 대신 `~/.nanobot/local-llm.env` override 파일로 선택값을 관리하며, smart-router `local` tier 가 선택된 로컬 LLM을 사용하도록 설정하는 것을 목표로 한다. 2026-05-16 기준으로 implementation 진행 기준이 확정된 high-priority candidate 로 둔다.
 
 ## 4. 이번 백로그에서 바로 후순위로 둔 항목
 

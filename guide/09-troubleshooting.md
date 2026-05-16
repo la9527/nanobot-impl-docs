@@ -57,7 +57,17 @@ launchctl list | grep nanobot
 
 - `com.nanobot.gateway`
 - `com.nanobot.api`
-- `com.nanobot.llama-lfm2-server`
+- `com.nanobot.local-model-lfm2`
+- `com.nanobot.local-model-qwen36`
+
+로컬 모델 상태를 더 직접 보려면 아래 명령을 우선 사용한다.
+
+```bash
+/Volumes/ExtData/Nanobot/infra/scripts/local-models/local-models.sh list
+/Volumes/ExtData/Nanobot/infra/scripts/local-models/local-models.sh status all
+```
+
+메모리 보호를 위해 `start all`, `install all` 은 허용하지 않는다. 필요한 모델만 개별적으로 올린다.
 
 ## 서비스 재시작
 
