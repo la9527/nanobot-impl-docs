@@ -107,6 +107,12 @@ curl -fsS -H 'X-Nanobot-Auth: <bootstrap-secret>' http://127.0.0.1:8765/webui/bo
 - 사용자가 `superpowers`, `workflow`, `brainstorm`, `design`, `spec`, `plan`, `TDD`, `debug`, `root cause`, `verify` 같은 표현을 쓰거나 구조화된 진행을 원하면 먼저 `.github/skills/using-superpowers/SKILL.md` 를 기준 진입점으로 본다.
 - vendored Superpowers skill 내용과 Nanobot 운영 제약이 충돌하면 이 문서의 규칙이 우선한다.
 
+## Impeccable 디자인 skill 연동
+
+- `.github/skills/impeccable/` 은 upstream `pbakaus/impeccable` 의 `.github/skills/impeccable` 을 vendoring 한 복사본으로 취급한다.
+- 사용자가 UI/UX 디자인, redesign, critique, audit, polish, layout, typography, color, motion, responsive UI, UX writing 관련 작업을 요청하면 `.github/skills/impeccable/SKILL.md` 를 먼저 확인한다.
+- vendored Impeccable skill 내용과 Nanobot 운영 제약이 충돌하면 이 문서의 규칙이 우선한다.
+
 ## 우선순위 가이드
 
 - 1순위: 현재 launchd 기반 live 서비스와 충돌하지 않는 변경
