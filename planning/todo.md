@@ -18,6 +18,8 @@
 
 ## 2. Next Candidates
 
+- `mcp-my-photos` cutover 이후 Nanobot gateway 가 새 `photo-source` / `photo-ranker` / `apple-terminal-helper` 묶음을 안정적으로 실행하는지 검증하고, old `MyOpenClawRepo` photo MCP copy 삭제 readiness 를 정리
+  - 계획 문서: [execution-backlog/13-nanobot-my-mcp-photos-cutover-validation-phase1.md](./execution-backlog/13-nanobot-my-mcp-photos-cutover-validation-phase1.md)
 - owner-aware aggregate 가 `/api/sessions` payload 만으로 계속 충분한지 다시 확인하고, 부족하면 새 backlog slice 로 route serializer 확장 검토
 - mail/calendar pilot 경로를 live n8n credential 상태 기준으로 다시 한 번 end-to-end 검증
 - calendar event delete/update automation 을 공식 command 로 추가할지 결정

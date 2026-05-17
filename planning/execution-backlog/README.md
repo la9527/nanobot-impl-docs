@@ -44,6 +44,7 @@
 - [10-nanobot-llmtesttool-v2-answer-evaluation-phase1.md](./10-nanobot-llmtesttool-v2-answer-evaluation-phase1.md)
 - [11-nanobot-llmtesttool-v2-usability-results-reporting-phase1.md](./11-nanobot-llmtesttool-v2-usability-results-reporting-phase1.md)
 - [12-nanobot-local-llm-control-and-smart-router-default-phase1.md](./12-nanobot-local-llm-control-and-smart-router-default-phase1.md)
+- [13-nanobot-my-mcp-photos-cutover-validation-phase1.md](./13-nanobot-my-mcp-photos-cutover-validation-phase1.md)
 
 ## 3. 작업 순서
 
@@ -116,6 +117,12 @@ proactive는 체감 가치는 크지만 annoyance risk도 커서, owner/task/act
 - [12-nanobot-local-llm-control-and-smart-router-default-phase1.md](./12-nanobot-local-llm-control-and-smart-router-default-phase1.md)
 
 이 단계는 기존 `local-models` 공용 계층을 Nanobot 실제 응답 경로와 WebUI/Telegram 설정 surface 에 연결하는 후속 slice 다. `qwen36` 을 phase-1 기본 local LLM 으로 두고, `~/.nanobot/nanobot.env` 대신 `~/.nanobot/local-llm.env` override 파일로 선택값을 관리하며, smart-router `local` tier 가 선택된 로컬 LLM을 사용하도록 설정하는 것을 목표로 한다. 2026-05-16 기준으로 implementation 진행 기준이 확정된 high-priority candidate 로 둔다.
+
+### 3.12 next photo MCP cutover validation candidate
+
+- [13-nanobot-my-mcp-photos-cutover-validation-phase1.md](./13-nanobot-my-mcp-photos-cutover-validation-phase1.md)
+
+이 단계는 `photo-source`, `photo-ranker`, `apple-terminal-helper` 를 새 `/Volumes/ExtData/my-mcp-servers/mcp-my-photos/` 루트로 옮긴 뒤, Nanobot live gateway 가 실제로 새 경로 MCP 를 실행하는지와 old `MyOpenClawRepo` 직접 의존성을 끊었는지를 검증하는 운영 안정화 slice 다.
 
 ## 4. 이번 백로그에서 바로 후순위로 둔 항목
 
